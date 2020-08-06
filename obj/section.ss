@@ -12,6 +12,5 @@
     (fields
      name
      type
-     buffer
-     ))
+     buffer))
   )

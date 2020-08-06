@@ -243,10 +243,3 @@
     )
   )
 
-(with-binary-output-file
- (lambda (out-file)
-   (write-elf-file #vu8(00 00 00 20) #vu8() #vu8() out-file)
-   )
- "./test-out.o"
- )
-

@@ -2,8 +2,8 @@
 
 (import (util hex))
 
-(define (format-insns2)
-  (for-each (lambda (insn) (printf "~a\n" (format-insn2 insn))) insns2))
+(define (format-instructions)
+  (for-each (lambda (insn) (printf "~a\n" (format-instruction insn))) instructions))
 
 (define (format-register-type register-type)
   (format "~a" (register-type-name register-type)))
@@ -97,9 +97,9 @@
         [(extend-type? operand-type) (render-extend-type operand-type u32)])
   )
 
-(define (format-insn2 insn2)
+(define (format-instruction instruction)
   (let [(first? #t)
-        (buffer (format "~a" (insn2-mnemonic insn2)))]
+        (buffer (format "~a" (instruction-mnemonic instruction)))]
     (for-each
      (lambda (formatted-op-type)
        (if first?
@@ -108,14 +108,14 @@
        (set! first? #f)
        (set! buffer (format "~a~a" buffer formatted-op-type))
        )
-     (map format-operand-type (insn2-operands insn2))
+     (map format-operand-type (instruction-operands instruction))
      )
     buffer
     ))
 
-(define (render-insn2 insn2 u32)
+(define (render-instruction instruction u32)
   (let [(first? #t)
-        (buffer (format "~a" (insn2-mnemonic insn2)))]
+        (buffer (format "~a" (instruction-mnemonic instruction)))]
     (for-each
      (lambda (formatted-op-type)
        (if first?
@@ -124,7 +124,7 @@
        (set! first? #f)
        (set! buffer (format "~a~a" buffer formatted-op-type))
        )
-     (map (lambda (op) (render-operand-type op u32)) (insn2-operands insn2))
+     (map (lambda (op) (render-operand-type op u32)) (instruction-operands instruction))
      )
     buffer
     ))

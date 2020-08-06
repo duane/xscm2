@@ -2,7 +2,7 @@
   (export dump-header dump-section-header read-string-table)
   (import (chezscheme)
           (elf))
-  
+
   (define (dump-header header port)
     (let* [(ei_class (elf-file-header-ei_class header))
            (arch-variable-formatter-hex (cond [(= ei_class 1) "~8,'0X"] [(= ei_class 2) "~16,'0X"]))]

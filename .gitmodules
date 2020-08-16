@@ -1,3 +1,6 @@
 [submodule "struct"]
 	path = struct
 	url = https://github.com/weinholt/struct-pack.git
+[submodule "chez-srfi"]
+	path = srfi
+	url = git@github.com:arcfide/chez-srfi.git

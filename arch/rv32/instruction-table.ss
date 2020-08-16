@@ -4,9 +4,11 @@
           (util hex))
 
   (define (lui rd imm)
-    (bitwise-copy-bit-field
-     (bitwise-copy-bit-field #b0110111 12 32 imm)
-     7 12 rd))
+    (fxior
+     (fxsll imm 12)
+     (fxsll rd 7)
+     #b0110111)
+    )
 
   (define (andi rd rs1 imm)
     (fxior

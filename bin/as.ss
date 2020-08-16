@@ -1,4 +1,6 @@
-(import (chezscheme))
+(import (chezscheme)
+        (asm errors)
+        (arch rv32 instruction))
 
 (define args (command-line))
 
@@ -19,16 +21,25 @@
              (display "Encountered label: ")
              (display label-name)
              (newline))]
-          [else (raise "unknown use of symbol")])
+          [else (raise-assembler-error "not a label; labels must terminate with ':'" annotated)])
     )
   )
 (define (process-list list-datum annotated)
-  (let [(first-word (car list-datum))]
-    (if (null? first-word) (raise "found empty list at top-level"))
-    (if (not (symbol? first-word)) (raise "the first datum in each expression should be a symbol"))
-    (display "Encountered instruction or directive: ")
-    (display first-word)
-    (newline)
+  (if (null? list-datum) (raise-assembler-error "empty list" annotated))
+  (let [(first-word (car list-datum))
+        (a-expr (annotation-expression annotated))]
+    (if (not (symbol? first-word))
+        (raise-assembler-error "must be identifier" (car annotated))
+        (route-instruction
+         (car a-expr)
+         annotated
+         (cdr (a-expr))
+         ))
+    ;; look up instruction here
+    (let [(operands (cdr list-datum))
+          (operand-annotations (cdr a-expr))]
+      #f
+      )
     )
   )
 (trace-define (process-other datum annotated) #f)

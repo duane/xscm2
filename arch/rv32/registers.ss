@@ -1,10 +1,10 @@
 (library (arch rv32 registers)
   (export *float-register-by-symbol* *integer-register-by-symbol* register-name register-abi-names register-numeric register-description)
   (import (chezscheme))
-  
+
   (define-record-type register
     (fields name abi-names numeric description))
-  
+
   (define (initialize-register-table . registers)
     (let [(table (make-hashtable symbol-hash symbol=?))]
       (letrec [(iterate

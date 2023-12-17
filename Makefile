@@ -1,4 +1,4 @@
 all: test-out.o
 
 test-out.o:
-	chez --program src/elf/elf-write.ss
+	scheme --program elf/elf-write.ss

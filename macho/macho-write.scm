@@ -133,8 +133,8 @@
 	    LC_BUILD_VERSION
 	    24
 	    1
-	    #xE0000000
-	    #xE0000000
+	    #x000E0000
+	    #x000E0000
 	    #x0))
 
 (define (put-linker-optimization-hint binary-output-port)

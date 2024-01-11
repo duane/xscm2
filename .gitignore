@@ -1,1 +1,5 @@
 *.so
+*\#*
+*.DS_Store
+*.o
+__pycache__

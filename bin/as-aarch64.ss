@@ -1,6 +1,6 @@
 (import (chezscheme)
         (asm errors)
-        (arch rv32 instruction))
+        (arch aarch64 instruction))
 
 (define args (command-line))
 
@@ -24,7 +24,6 @@
           [else (raise-assembler-error "not a label; labels must terminate with ':'" annotated)])
     )
   )
-
 (define (process-list list-datum annotated)
   (if (null? list-datum) (raise-assembler-error "empty list" annotated))
   (let [(first-word (car list-datum))
@@ -45,7 +44,7 @@
   )
 (trace-define (process-other datum annotated) #f)
 
-(define (make-rv32-assembler)
+(define (make-aarch64-assembler)
   (let [(a 'a)]
     (lambda (value-or-annotation)
       (let [(annotation (if (annotation? value-or-annotation)
@@ -63,4 +62,4 @@
     )
   )
 
-(load arg (make-rv32-assembler))
+(load arg (make-aarch64-assembler))

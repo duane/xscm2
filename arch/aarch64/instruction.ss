@@ -1,28 +1,28 @@
 (library (arch aarch64 instruction)
-  (export route-instruction)
+  (export encode-adrp)
   (import (chezscheme)
           (arch aarch64 registers)
           (asm errors))
 
-(define-syntax get-ireg
-  (lambda (x)
-    (syntax-case x ()
-      [(_ reg-sym a-reg)
-       #'(let [(r (hashtable-ref
-                   *integer-register-by-symbol*
-                   'reg-sym
-                   #f))]
-           (if (not r) (set! r (hashtable-ref *integer-register-by-symbol* reg-sym #f)))
-           (if r (register-numeric r) (raise-assembler-error "not a valid register" a-reg)))])))
 
-(define-syntax bits-max
-  (lambda (x)
-    (syntax-case x ()
-      [(_ bits)
-       (let* [(bval (syntax->datum (syntax bits)))] (and (number? bval) (> bval 0)))
-       #'(- (fxsll 1 bits) 1)])))
+					; signatures-
+					; 'r64
+					; 'r32
+					; 'ilit
+					; 'addr/simple
+					; 'addr/offset
+					; 'addr/pre-indexed
+					; 'addr-post-indexed
+					; 'addr-scaled
+					; 'addr-unscaled
+					; 'addr/scaled-or-unscaled-register-idx
 
-(define (route-instruction a-mnemonic a-parent a-ops)
-  (let [(mnemonic (annotation-stripped a-mnemonic))]
-    (cond [else (raise-assembler-error "unknown instruction" a-mnemonic)])))
+
+  (define (encode-adrp Rd-encoded imm20)
+    (fxior #x90000000
+	   (fxsll (fxand #b11 imm20) 29)
+	   (fxsll (fxand #b11111111111111111 imm20) 3)
+	   Rd-encoded
+	   )
+    ) 
 )

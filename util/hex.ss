@@ -1,6 +1,24 @@
 (library (util hex)
-  (export hex->bytevector hex-dump bytevector->hex-string rand-hex-string)
+  (export hex->bytevector hex-dump bytevector->hex-string rand-hex-string u32->hex)
   (import (chezscheme))
+
+  (define (u32->hex u32)
+    (string
+
+
+
+
+     (integer->char (nibble->hex-char (fxand #xf (fxsrl u32 28))))
+     (integer->char (nibble->hex-char (fxand #xf (fxsrl u32 24))))
+     (integer->char (nibble->hex-char (fxand #xf (fxsrl u32 20))))
+     (integer->char (nibble->hex-char (fxand #xf (fxsrl u32 16))))
+     (integer->char (nibble->hex-char (fxand #xf (fxsrl u32 12))))
+     (integer->char (nibble->hex-char (fxand #xf (fxsrl u32 8))))
+     (integer->char (nibble->hex-char (fxand #xf (fxsrl u32 4))))
+     (integer->char (nibble->hex-char (fxand #xf u32)))
+     )
+    )
+  
   (define (bytevector-little-u32-iterate proc bytevector)
     (let [(max (div (bytevector-length bytevector) 4))]
       (letrec

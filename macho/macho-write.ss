@@ -245,7 +245,7 @@
 (define symtab-bin (hex->bytevector "20000000 0E010000 00000000 00000000 07000000 0E020000 20000000 00000000 1A000000 0E020000 20000000 00000000 14000000 0E030000 30000000 00000000 0E000000 0F010000 00000000 00000000 01000000 01000000 00000000 00000000 005F7075 7473006C 5F2E7374 72005F6D 61696E00 6C746D70 32006C74 6D703100 6C746D70 30000000"))
 
 (define (write-test-file)
-  (let [(output-port (open-file-output-port "test.o" (file-options no-fail) 'block #f))
+  (let [(output-port (open-file-output-port "test-macho.o" (file-options no-fail) 'block #f))
 	(header (make-mach-object-file-header
 		 #xfeedfacf
 		 #x100000C

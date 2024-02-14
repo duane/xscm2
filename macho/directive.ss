@@ -1,0 +1,12 @@
+					; section
+					; build_version
+					; globl
+					; p2align
+					; cfi_startproc
+					; cfi_def_cfa_offset
+					; cfi_def_cfa
+					; cfi_offset
+					; loh
+					; cfi_endproc
+					; asciz
+					; subsections_va_symbols

@@ -349,8 +349,8 @@ if __name__ == "__main__":
     asm = Assembler()
     insn = swap32(0xFD7BBFA9)
     (mnemonic, bitfield) = asm.find_bitfield(insn)
+    print(mnemonic, bitfield)
     result = bitfield.asm(
         [Immediate(126), Register64(30), Register64(31), Register64(29)]
     )
-    assert result == insn
-    result = asm.assemble("add/immx", [Immediate(0), Register64(31), Register64(30)])
+

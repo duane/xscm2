@@ -10,10 +10,13 @@
 	  (arch aarch64 registers)
 	  (asm errors))
 
-
-  (define-record-type simple-address (fields register))
-  (define-record-type offset-address (fields register offset-immediate))
-  (define-record-type pre-address (fields register offset-immediate))
-  (define-record-type post-address (fields register offset-immediate))
-  
+  (define (is-simple-address? expr))
+  (define (is-offset-address? expr))
+  (define (is-pre-address? expr))
+  (define (is-post-address? expr))
+  (define (encode-simple-address fields register))
+  (define (encode-offset-address fields register offset-immediate))
+  (define (encode-pre-address fields register offset-immediate))
+  (define (encode-post-address fields register offset-immediate))
+ 
   )

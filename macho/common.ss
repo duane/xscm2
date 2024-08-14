@@ -1,0 +1,5 @@
+(define LC_SYMTAB #x2)
+(define LC_SEGMENT_64 #x19)
+(define LC_BUILD_VERSION #x32)
+(define LC_LINKER_OPTIMIZATION_HINT #x2E)
+(define LC_DYSYMTAB #xb)

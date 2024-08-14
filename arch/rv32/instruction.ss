@@ -2,6 +2,7 @@
   (export route-instruction)
   (import (chezscheme)
           (arch rv32 registers)
+	  (asm parse)
           (asm errors))
 
 (define-syntax get-ireg
@@ -15,25 +16,6 @@
            (if (not r) (set! r (hashtable-ref *integer-register-by-symbol* reg-sym #f)))
            (if r (register-numeric r) (raise-assembler-error "not a valid register" a-reg)))])))
 
-(define-syntax bits-max
-  (lambda (x)
-    (syntax-case x ()
-      [(_ bits)
-       (let* [(bval (syntax->datum (syntax bits)))] (and (number? bval) (> bval 0)))
-       #'(- (fxsll 1 bits) 1)])))
-
-(define-syntax parse-imm
-  (lambda (x)
-    (syntax-case x ()
-      [(_ imm bits a-imm)
-       #'(begin
-           (if (not (number? imm))
-               (raise-assembler-error "not a valid immediate literal" a-imm))
-           (if (>= imm (bits-max bits))
-               (raise-assembler-error "immediate out of range" a-imm))
-           imm
-           )]
-      )))
 
 
 (define-syntax define-u-instruction

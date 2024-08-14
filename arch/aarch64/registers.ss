@@ -2,11 +2,14 @@
 					; register-description
 					; register-abi-names
   ; *float-register-by-symbol*
-  (export *integer-register-by-symbol* register-name register-numeric)
+  (export *integer-register-by-symbol* register-name register-numeric parse-register! parse-register register-size)
   (import (chezscheme))
 
   (define-record-type register
     (fields name size numeric))
+
+  (define (XnOrSpScope reg) (= 64 (register-size reg)))
+
 
   (define (initialize-register-table . registers)
     (let [(table (make-hashtable symbol-hash symbol=?))]
@@ -16,22 +19,22 @@
                          (let* [(reg (car rest))
                                 (next-rest (cdr rest))
                                 (name (register-name reg))]
-                              (hashtable-set! table name reg)
-                              (iterate next-rest)
-                              )]
+                           (hashtable-set! table name reg)
+                           (iterate next-rest)
+                           )]
                         )))]
         (iterate registers)
         )
       table
       )
-    )
+    )    
 
   (define-syntax define-register
     (lambda (x)
       (syntax-case x ()
         [(_ name size numeric)
          #'(begin
-             (define name (make-register 'name numeric))
+             (define name (make-register 'name size numeric))
              )
         ]
         )
@@ -48,6 +51,13 @@
              (define glob (initialize-register-table name ...))
              )
          ])
+      )
+    )
+
+  (define
+    (lookup-register name size)
+    (let ((reg (hashtable-ref *integer-register-by-symbol* name #f)))
+      (if (and reg (= (register-size reg) size)) reg #f)
       )
     )
 
@@ -82,8 +92,52 @@
     [%x26 64  26]
     [%x27 64  27]
     [%x28 64  28]
+    [%x29 64  29]
+    [%x30 64  30]
+
+    [%w0 32 0]
+    [%w1 32 1]
+    [%w2 32 2]
+    [%w3 32 3]
+    [%w4 32 4]
+    [%w5 32 5]
+    [%w6 32 6]
+    [%w7 32 7]
+    [%w8 32 8]
+    [%w9 32 9]
+    [%w10 32 10]
+    [%w11 32 11]
+    [%w12 32 12]
+    [%w13 32 13]
+    [%w14 32 14]
+    [%w15 32 15]
+    [%w16 32 16]
+    [%w17 32 17]
+    [%w18 32 18]
+    [%w19 32 19]
+    [%w20 32 20]
+    [%w21 32 21]
+    [%w22 32 22]
+    [%w23 32 23]
+    [%w24 32 24]
+    [%w25 32 25]
+    [%w26 32 26]
+    [%w27 32 27]
+    [%w28 32 28]
+    [%w29 32 29]
+    [%w30 32 30]
+    
     [%fp 64  29]
     [%lr 64  30]
-    [%sp 64  31]
+    [%sp 64  31]    
     )
+
+  (define (parse-register! sym)
+    (let ([result (hashtable-ref *integer-register-by-symbol* sym #f)])
+      (assert result)
+      result))
+  (define (parse-register sym)
+    (hashtable-ref *integer-register-by-symbol* sym #f)
+    )
+	
   )

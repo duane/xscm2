@@ -1,5 +1,5 @@
-(library (unit-test)
-  (export unit-test-main)
+>(library (unit-test)
+  (export suite make-test render-condition expect expect-values)
   (import (chezscheme))
 
   (define-condition-type
@@ -11,7 +11,15 @@
     (actual expectation-violation-actual))
 
   (define (expect expected actual)
-    (if (equal? expected actual) 'nil (raise (make-expectation-violation expected actual))))
+    (if (equal? expected actual) 'nil (raise
+				       (condition
+					(make-error)
+					(make-expectation-violation expected actual)))))
+
+  (define-syntax expect-values
+    (syntax-rules ()
+      [(_ (lh-value ...) rh-value)
+       (call-with-values (lambda () rh-value) (lambda rh-values (expect (list lh-value ...) rh-values)))]))
 
   (define (render-expectation-violation ev)
     (format "expected\n\t~A\n   actual\n\t~A"
@@ -45,81 +53,47 @@
 	       (let ([ord (+ count 1)]
 		     [rendered (render-proc con)]
 		     [pre-padding (if (equal? 0 count) "" "\n")])
-		 (set! output (string-append output (format "~A\t~d. ~A" pre-padding ord rendered)))
+		 (set! output (string-append output (format "~A\t\t~d. ~A" pre-padding ord rendered)))
 		 (set! count (+ count 1))))))
        render-condition-handlers)
       output))
 
-  (define (run-test name proc)
-    (guard (con [else (display 'fail) (newline)
-		      (display (render-condition con))
-		      #f])
-      (proc)
-      (display 'pass)
-      #t))
-
-  (define (run-test-suite suite)
-    (let* ([tests-total (length suite)]
-	   [tests-count 0]
-	   [tests-passed 0])
-      (for-each
-       (lambda (test)
-	 (let* ([name (car test)]
-		[proc (cdr test)])
-	   (display (format "~A... " name))
-	   (let ([result (run-test name proc)])
-	     (if result (set! tests-passed (+ tests-passed 1)))
-	     (newline)
-	   (set! tests-count (+ tests-count 1))	     
-	   )
-	   ))
-       suite)
-      (assert (equal? tests-total tests-count))
-      (display (format "\t ~d/~d tests passed" tests-passed tests-total)) (newline)
-      (>= tests-total tests-passed)))
-
-  ;; runtime information
-
-  (define *tests* '())
-  (define (define-test name proc) (set! *tests* (cons (cons name proc) *tests*)))
-
+  ;; runtime stuff
+  (define *should-reraise-test-exceptions* #t)
+  
   ;; macro stuff
-  (define-syntax test
+  (define-syntax make-test
     (syntax-rules ()
-      [(test name body1 ...) (define-test 'name (lambda () body1 ...))]))
+      [(_ name body ...)
+       (lambda ()
+	 (guard (con [else (display "\x1b;[31;20mf\x1b;[0m") (newline)
+			   (display-condition con)
+			   (newline)
+			   (if *should-reraise-test-exceptions* (raise con))
+			   #f])
+	   (display #\tab)
+	   (display 'name)
+	   (display "...")
+	   (begin body ...)
+	   (display "\x1b;[32;20mp\x1b;[0m")
+	   (newline)
+	   #t))
+       ]
+      ))
 
-  ;; driver stuff
-  (define (run-tests) (run-test-suite *tests*))
-
-  
-  ;; tests and assertions
-
-  (define *-example-expectation-violation-proc-* (lambda () (expect #t '(1 two (three)))))
-  (define *-example-assertion-violation-proc-* (lambda () (assert #f)))
-  (define *-example-who-condition-proc-* (lambda () (assertion-violation 'example-who "message")))
-  
-  (define *-example-expectation-violation-*
-    (guard (con [else con]) (*-example-expectation-violation-proc-*)))
-  (define *-example-assertion-violation-* (guard (con [else con]) (*-example-assertion-violation-proc-*)))
-  (define *-example-who-condition-* (guard (con [else con]) (*-example-who-condition-proc-*)))
-  
-  (define *-example-failing-suite-*
-    `(["Example assertion violation" . ,(lambda () (assert #f))]
-      ["Example expectation violation" . ,(lambda () (expect #t '(1 two (three))))]
-      ["Example who violation" . ,(lambda () (assertion-violation 'example-who "message"))]
-      ["Example passing test" . ,(lambda () (display 'woo-hoo))]))
-
-  (define *-example-passing-suite-*
-    `(["Example assertion violation" . ,(lambda () (assert #t))]
-      ["Example expectation violation" . ,(lambda () (expect #t #t))]
-      ["Example passing test" . ,(lambda () (display 'woo-hoo))]))
-
-  (define (verify-failure) (run-test-suite *-example-failing-suite-*))
-  (define (verify-passing) (run-test-suite *-example-passing-suite-*))
-
-  ;; at-runtime test definitions
-  (define (unit-test-main)
-      (test passing-test (assert #t))
-      (run-tests)
-      )
+  (define-syntax suite
+    (syntax-rules (test)
+      [(_ name (test test-name body ...) ...)
+       (lambda ()
+	 (display 'name) (newline)
+	 (let* ([count 0]
+		[passing 0])
+	   (let ([result ((make-test test-name body ...))])
+	     (set! count (+ count 1))
+	     (if result (set! passing (+ passing 1)))
+	     )
+	   ...
+	   (display (format "~d/~d passing\n" passing count))
+	   ))]
+      ))
   )

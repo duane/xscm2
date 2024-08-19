@@ -1,15 +1,10 @@
 (library (arch aarch64 registers)
-					; register-description
-					; register-abi-names
-  ; *float-register-by-symbol*
   (export *integer-register-by-symbol* register-name register-numeric parse-register! parse-register register-size)
-  (import (chezscheme))
+  (import (chezscheme)
+	  (util string))
 
   (define-record-type register
     (fields name size numeric))
-
-  (define (XnOrSpScope reg) (= 64 (register-size reg)))
-
 
   (define (initialize-register-table . registers)
     (let [(table (make-hashtable symbol-hash symbol=?))]
@@ -27,7 +22,7 @@
         )
       table
       )
-    )    
+    )
 
   (define-syntax define-register
     (lambda (x)
@@ -36,7 +31,7 @@
          #'(begin
              (define name (make-register 'name size numeric))
              )
-        ]
+         ]
         )
       )
     )
@@ -53,6 +48,18 @@
          ])
       )
     )
+
+  (define-syntax define-class
+    (syntax-rules ()
+      [(_ table (name reg-var) body ...)
+       (let ([table (make-hashtable symbol-hash symbol=?)]
+	     [filter-proc (lambda (reg-var) body ...)])
+	 (for-each
+	  (lambda (reg)
+	    (if (filter-proc reg) (hashtable-set! table (register-name reg) reg)))
+	  (hashtable-values *integer-register-by-symbol*)))]
+      [(_ table name registers ...)
+       (for-each (lambda (reg) (hashtable-set! table (register-name reg) reg)) (list registers ...))]))
 
   (define
     (lookup-register name size)
@@ -132,12 +139,17 @@
     [%sp 64  31]    
     )
 
+  ;; (define (select-integer-registers proc) (filter proc (hashtable-keys *integer-register-by-symbol*)))
+
   (define (parse-register! sym)
     (let ([result (hashtable-ref *integer-register-by-symbol* sym #f)])
       (assert result)
       result))
-  (define (parse-register sym)
-    (hashtable-ref *integer-register-by-symbol* sym #f)
-    )
-	
+
+  (define (parse-register sym) (hashtable-ref sym #f))
+
+  ;; (define-class (integer-gpr-64 reg)
+  ;;   (let ([name-string (symbol->string (register-name reg))])
+  ;;     (string-starts-with? name-string "%w")))
+  
   )

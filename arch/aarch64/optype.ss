@@ -63,7 +63,7 @@
        (lambda (size)
 	 (parent-new parse-annotated-reg size)
 	 ))))
-
+  
   (define-record-type immediate-operand
     (parent operand)
     (fields bits

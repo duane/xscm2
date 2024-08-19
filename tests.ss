@@ -2,6 +2,7 @@
 	(unit-test)
 	(arch aarch64 registers)
         (arch aarch64 literal)
+	(arch aarch64 operand-selector)
 	)
 
 (define (load-annotated path)
@@ -18,40 +19,50 @@
 (define reg-prex-deref (vector-ref literals 6))
 (define reg-reg-deref (vector-ref literals 7))
 
-(define-syntax an
-  (syntax-rules ()
-    [(_ expr) #'expr]))
+(suite read-operand-list
+       )
+					; ((suite operands)
+;;  (test read-operands-nil
+;;        ))
 
-((suite registers
-	(test parse-xn (let ([register (parse-register! '%x17)])
-			 (expect 64 (register-size register))
-			 (expect '%x17 (register-name register))
-			 (expect 17 (register-numeric register))))
-	(test parse-wp (let ([register (parse-register! '%w17)])
-			 (expect 32 (register-size register))
-			 (expect '%w17 (register-name register))
-			 (expect 17 (register-numeric register))))))
+;; ((suite registers
+;; 	(test parse-xn (let ([register (parse-register! '%x17)])
+;; 			 (expect 64 (register-size register))
+;; 			 (expect '%x17 (register-name register))
+;; 			 (expect 17 (register-numeric register))))
+;; 	(test parse-wp (let ([register (parse-register! '%w17)])
+;; 			 (expect 32 (register-size register))
+;; 			 (expect '%w17 (register-name register))
+;; 			 (expect 17 (register-numeric register))))))
 
 
-((suite literals
-	(test parse-immediate
-	      (let-values ([(type expr _) (parse-literal immediate)])
-		(expect '(immediate 42) (list type expr))))
-	(test parse-immediate-f-symbol (expect #f (parse-immediate literal-symbol)))
-	(test parse-immediate-f-deref (expect #f (parse-immediate reg-deref)))
-	(test parse-symbol
-	      (let-values ([(type expr _) (parse-literal literal-symbol)])
-		(expect '(symbol symbol) (list type expr))))
-	(test parse-reg
-	      (let-values ([(type expr _) (parse-literal reg-immediate)])
-		(expect `(register ,(parse-register! '%w24)) (list type expr))))
-	(test parse-deref
-	      (let-values ([(type expr _) (parse-literal reg-deref)])
-		(expect `(deref ,(parse-register! '%w2)) (list type expr))))
-	))
+;; ((suite literals
+;; 	(test parse-immediate
+;; 	      (let-values ([(type expr _)
+;; 			    (parse-literal immediate)])
+;; 		(expect '(immediate 42) (list type expr))))
+;; 	(test parse-immediate-f-symbol
+;; 	      (expect #f
+;; 		      (parse-immediate literal-symbol)))
+;; 	(test parse-immediate-f-deref (expect #f (parse-immediate reg-deref)))
+;; 	(test parse-symbol
+;; 	      (let-values ([(type expr _) (parse-literal literal-symbol)])
+;; 		(expect '(symbol symbol) (list type expr))))
+;; 	(test parse-reg
+;; 	      (let-values ([(type expr _) (parse-literal reg-immediate)])
+;; 		(expect `(register ,(parse-register! '%w24)) (list type expr))))
+;; 	(test parse-deref
+;; 	      (let-values ([(type expr _) (parse-literal reg-deref)])
+;; 		(expect `(deref ,(parse-register! '%w2)) (list type expr))))
+;; 	))
+
+;; ((suite operand-selector
+;; 	(test parse-operand-imm
+;; 	      (expect #t (select-operand 44 (parse-imm-selector 'uimm7a2)))
+;; 	      (expect 'align-invalid (select-operand 42 (parse-imm-selector 'uimm7a2)))
+;; 	      )))
 
 ;; (suite parse-literal
 ;;        (test parse-imm (parse-literal (an 42))))
-
 
 

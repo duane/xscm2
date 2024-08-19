@@ -26,24 +26,25 @@
 		    (null? (cdr list-expr)))) #f
 	  (let ([child-annotation (car list-expr)]) 
 	    (with-assembler-source (reg-expr child-annotation)
-				   (assert (not (annotation? reg-expr)))
-				   (let ([result (parse-register reg-expr)])
-				     (if result (values 'deref result expr) #f)))
+	       (assert (not (annotation? reg-expr)))
+	       (let ([result (parse-register reg-expr)])
+		 (if result (values 'deref result expr) #f)))
 	    ))))
+
   
   (define (parse-literal annotated)
     (with-assembler-source (expr annotated)
-      (cond [(number? expr) (values 'immediate expr annotated)]
-	    [(symbol? expr)
-	     (let ([reg-result (parse-register expr)])
-	       (if reg-result
-		   (values 'register reg-result annotated)
-		   (values 'symbol expr annotated)))]
-	    [(list? expr)
-	     (let ([first-arg-annotated (car expr)])
-	       (with-assembler-source (first-expr first-arg-annotated)
-		 (let ([reg-result (parse-register first-expr)])
-		   (if (and reg-result (null? (cdr expr)))
-		       (values 'deref reg-result annotated)))))])))
+			   (cond [(number? expr) (values 'immediate expr annotated)]
+				 [(symbol? expr)
+				  (let ([reg-result (parse-register expr)])
+				    (if reg-result
+					(values 'register reg-result annotated)
+					(values 'symbol expr annotated)))]
+				 [(list? expr)
+				  (let ([first-arg-annotated (car expr)])
+				    (with-assembler-source (first-expr first-arg-annotated)
+							   (let ([reg-result (parse-register first-expr)])
+							     (if (and reg-result (null? (cdr expr)))
+								 (values 'deref reg-result annotated)))))])))
   
   )

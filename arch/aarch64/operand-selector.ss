@@ -1,7 +1,9 @@
 (library (arch aarch64 operand-selector)
   (export operand-selector
 	  parse-imm-selector make-imm-selector make-imm-select make-imm-encode
-	  select-operand)
+	  parse-reg-selector
+	  select-operand
+	  select-operands)
   (import (chezscheme)
 	  (arch aarch64 registers)
 	  (util string))
@@ -49,6 +51,6 @@
     )
 
   (include "operand-types/imm-operand.ss")
-  ;; (include "arch/aarch64/operand-types/reg-operand.ss")
+  (include "operand-types/reg-operand.ss")
 
   )

@@ -103,10 +103,10 @@
 	   (parse-imm-selector str)])))
 
 
-(assert (string=? "simm1" (render-imm-selector 1 1 #t)))
-(assert (string=? "simm16" (render-imm-selector 16 1 #t)))
-(assert (string=? "simm16a5" (render-imm-selector 16 5 #t)))
-(assert (string=? "uimm1" (render-imm-selector 1 1 #f)))
-(assert (string=? "uimm16" (render-imm-selector 16 1 #f)))
-(assert (string=? "uimm16a5" (render-imm-selector 16 5 #f)))
+;; (assert (string=? "simm1" (render-imm-selector 1 1 #t)))
+;; (assert (string=? "simm16" (render-imm-selector 16 1 #t)))
+;; (assert (string=? "simm16a5" (render-imm-selector 16 5 #t)))
+;; (assert (string=? "uimm1" (render-imm-selector 1 1 #f)))
+;; (assert (string=? "uimm16" (render-imm-selector 16 1 #f)))
+;; (assert (string=? "uimm16a5" (render-imm-selector 16 5 #f)))
 

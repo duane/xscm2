@@ -1,5 +1,5 @@
 (library (asm build)
-  (export read-operand)
+  (export read-operands)
   (import (chezscheme)
 	  (asm errors)
 	  (arch aarch64 registers))

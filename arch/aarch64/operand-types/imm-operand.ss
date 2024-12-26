@@ -25,9 +25,6 @@
   (syntax-rules ()
     [(_ size align is-signed?)
      (lambda (val)
-       ;; the basic strategy here is to verify sign
-       ;; then aligment
-       ;; then size
        (let ([is-sign-valid? (if is-signed? #t (>= val 0))])
 	 (if (not is-sign-valid?) '(sign-invalid #f)
 	     (let* ([align-minus-one (- align 1)]
@@ -56,7 +53,6 @@
 	     [encode (make-imm-encode size align is-signed?)])
 	 ((new render select encode))))
      )))
-
 
 ;; (s|u)imm<Size>[a<Align>]
 (define (parse-imm-selector sym) (parse-imm-selector-str (symbol->string sym)))
@@ -113,3 +109,4 @@
 (assert (string=? "uimm1" (render-imm-selector 1 1 #f)))
 (assert (string=? "uimm16" (render-imm-selector 16 1 #f)))
 (assert (string=? "uimm16a5" (render-imm-selector 16 5 #f)))
+

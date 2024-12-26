@@ -1,7 +1,10 @@
->(library (unit-test)
-  (export suite make-test render-condition expect expect-values)
+(library (unit-test)
+  (export suite expect)
   (import (chezscheme))
-
+  (define (run-tests-file tests-file)
+    (parameterize ([compile-profile 'source])
+      (load tests-file)))
+  
   (define-condition-type
     &expectation-violation
     &assertion
@@ -96,4 +99,7 @@
 	   (display (format "~d/~d passing\n" passing count))
 	   ))]
       ))
+
+
+
   )

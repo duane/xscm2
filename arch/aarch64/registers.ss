@@ -1,5 +1,5 @@
 (library (arch aarch64 registers)
-  (export *integer-register-by-symbol* register-name register-numeric parse-register! parse-register register-size)
+  (export *integer-register-by-symbol* register-name register-numeric parse-register! parse-register register-size *w-or-sp* set-contains-symbol?)
   (import (chezscheme)
 	  (util string))
 
@@ -49,17 +49,34 @@
       )
     )
 
-  (define-syntax define-class
+  (define (set-contains-symbol? class sym)
+    (let ([result (hashtable-ref class sym #f)])
+      (if result #t #f)))
+
+  (define-syntax hashtable-union
     (syntax-rules ()
-      [(_ table (name reg-var) body ...)
-       (let ([table (make-hashtable symbol-hash symbol=?)]
-	     [filter-proc (lambda (reg-var) body ...)])
+      [(_ ht ...)
+       (let ([table (make-hashtable symbol-hash symbol=?)])
+	 (vector-for-each
+	  (lambda (reg)
+	    (hashtable-set! table (register-name reg) reg))
+	  (hashtable-values ht))
+	 ...
+	 table)]))
+
+  (define-syntax enumerated-register-set
+    (syntax-rules ()
+      [(_ reg-table body ...)
+       (let ([table (make-hashtable symbol-hash symbol=?)])
 	 (for-each
 	  (lambda (reg)
-	    (if (filter-proc reg) (hashtable-set! table (register-name reg) reg)))
-	  (hashtable-values *integer-register-by-symbol*)))]
-      [(_ table name registers ...)
-       (for-each (lambda (reg) (hashtable-set! table (register-name reg) reg)) (list registers ...))]))
+	    (let ([reg-lookup-result (hashtable-ref reg-table reg #f)])
+	      (assert reg-lookup-result)
+	      (hashtable-set! table (register-name reg-lookup-result) reg-lookup-result)
+	      )
+	    )
+	  (list 'body ...))
+	 table)]))
 
   (define
     (lookup-register name size)
@@ -139,17 +156,28 @@
     [%sp 64  31]    
     )
 
-  ;; (define (select-integer-registers proc) (filter proc (hashtable-keys *integer-register-by-symbol*)))
-
   (define (parse-register! sym)
     (let ([result (hashtable-ref *integer-register-by-symbol* sym #f)])
       (assert result)
       result))
 
-  (define (parse-register sym) (hashtable-ref sym #f))
+  (define (parse-register sym)
+    (let ([result (hashtable-ref *integer-register-by-symbol* sym #f)])
+      (display result)      
+      result))
 
-  ;; (define-class (integer-gpr-64 reg)
-  ;;   (let ([name-string (symbol->string (register-name reg))])
-  ;;     (string-starts-with? name-string "%w")))
-  
+
+  (define *sp* (enumerated-register-set
+		*integer-register-by-symbol*
+		%sp))
+  (define *w*
+    (enumerated-register-set
+     *integer-register-by-symbol*
+     %w0 %w1 %w2 %w3 %w4 %w5 %w6 %w7 %w8 %w9 %w10 %w11 %w12 %w13 %w14 %w15 %w16 %w17 %w18 %w19 %w20 %w21 %w22 %w23 %w24 %w25 %w26 %w27 %w28 %w29 %w30))
+  (define *x*
+    (enumerated-register-set
+     *integer-register-by-symbol*
+     %x0  %x1  %x2  %x3  %x4  %x5  %x6  %x7  %x8  %x9  %x10  %x11  %x12  %x13  %x14  %x15  %x16  %x17  %x18  %x19  %x20  %x21  %x22  %x23  %x24  %x25  %x26  %x27  %x28  %x29  %x30))
+  (define *w-or-sp* (hashtable-union *sp* *w*))
+  (define *x-or-sp* (hashtable-union *sp* *w*))
   )

@@ -1,15 +1,29 @@
-(define-syntax make-reg-select
-  (syntax-rules ()
-    [(_ class)
-     (lambda (val) (if (hashtable-contains? class val) #t #f))]))
+;;; register selector
+;;; ((X|W) class ...)
 
+;; (define-syntax make-reg-render
+;;   (syntax-rules ()
+;;     [(_ class ...)
+;;      (lambda (_) (format "~A" (list 'class ...)))]))
+
+;; (define-syntax make-reg-select
+;;   (syntax-rules ()
+;;     [(_ class rest ...)
+;;      (lambda (val)
+;;        (or (set-contains-symbol? class val)
+;; 	   ())
+;;        )]))
+
+;; Register class descriptor
+;; (class ...)
 (define-record-type reg-selector
   (parent operand-selector)
   (protocol
    (lambda (new)
-     (lambda (class)
-       (let ([render (render-reg-selector class)]
-	     [select (make-reg-select class)]
-	     [encode (make-reg-encode class)])
-	 ((new render select encode))))
+     (lambda (first-class . more-classes)
+       (let* ([classes (cons first-class more-classes)]
+	      [render]
+	      [select]
+	      [encode])
+	 ))
      )))
